@@ -1,18 +1,18 @@
-#ifndef FIBLFSR_H
-#define FIBLFSR_H
-#include <iostream>
+//  Copyright [2021] Nuno Mestre
+#ifndef _HOME_NUNO_PSX_FIBLFSR_H_
+#define _HOME_NUNO_PSX_FIBLFSR_H_
+
 #include <string>
+#include <iostream>
 
-using namespace std;
-
-class FibLFSR{
-	public:
-		FibLFSR(string seed);
-		int step();
-		int generate(int k);
-	friend ostream& operator<<(ostream& out, const FibLFSR& right);
-	private:
-	//Professor said it was ok for taps not to be in constructor so just a 		private string to keep track of the bit-string
-		string number;
+class FibLFSR {
+ public:
+    explicit FibLFSR(std::string seed);
+    int step();
+    int generate(int k);
+    friend std::ostream& operator<<(std::ostream& out, const FibLFSR& object);
+    ~FibLFSR();
+ private:
+        int* data;
 };
-#endif /*FIBLFSR_H*/
+#endif  //  _HOME_NUNO_PSX_FIBLFSR_H_

@@ -1,57 +1,47 @@
-/*
- * Nuno Mestre
+/* Copyright [2021] Nuno Mestre
  * 09/24/2021
- * Class for my FibLFSR implementation used in PhotoMagic to randomize pixel colors.
-*/ 
- #include "FibLFSR.h"
+ * Class for my FibLFSR implementation used in PhotoMagic to randomize pixels
+ * and their colors using the Fibonancci Sequence
+ */
+#include "FibLFSR.h"
+#include <string>
+#include <iostream>
 
-FibLFSR::FibLFSR(string seed){
-	for(int i = 0; i < 16; i++){
-		number.push_back(seed.at(i));
-	}
+FibLFSR::FibLFSR(std::string seed) : data(new int[16]) {
+    for (int i = 0; i < 16; i++) {
+        data[i] = (seed[i] == '1') ? 1 : 0;
+    }
 }
-int FibLFSR::step(){
-	int XORresult = 0;
-	//Determines XOR of the zero index and second index(15th and 13th bit)
-	if((number.at(0) == '1' && number.at(2) != '1') || (number.at(0) != '1' && number.at(2) == '1')){
-		XORresult = 1;
-	}
-	else{
-		XORresult = 0;
-	}
-	//XOR of the first XOR and the 3rd index (12th bit)
-	if((XORresult == 1 && number.at(3) != '1') || (XORresult != 1 && number.at(3) == '1')){
-		XORresult = 1;
-	}
-	else{
-		XORresult = 0;
-	}
-	//XOR of the second XOR and the 5th index (10th bit)
-	if((XORresult == 1 && number.at(5) != '1') || (XORresult != 1 && number.at(5) == '1')){
-		XORresult = 1;
-	}
-	else{
-		XORresult = 0;
-	}
-	//shift all the bits down one spot to the left
-	for(int i = 1; i <= 15; ++i){
-		number.at(i-1) = number.at(i);
-	}
-	//Pushback new bit onto the end
-	number.at(15) = XORresult;
+int FibLFSR::step() {
+    int new_bit = data[0] ^ data[2] ^ data[3] ^ data[5];
 
-	return XORresult;
-}
-int FibLFSR::generate(int k){
-	int decVal = 0;
-	//Every time step = one the one will multiply by two every step
-	for(int i = 0; i < k; i++){
-		decVal = (2 * decVal) + step();
-	}
+    for (int i = 0; i < 15; i++) {
+        data[i] = data[i + 1];
+    }
+    data[15] = new_bit;
 
-	return decVal;
+    return data[15];
 }
-ostream& operator<<(ostream& out, const FibLFSR& right){
-	out << right.number;
-	return out;
+int FibLFSR::generate(int k) {
+    int decVal = 0;
+        //  Every time step = one the one will multiply by two every step
+        for (int i = 0; i < k; i++) {
+                decVal = (2 * decVal) + step();
+        }
+
+        return decVal;
+}
+
+FibLFSR::~FibLFSR() {
+    delete[] data;
+    data = nullptr;
+}
+
+
+std::ostream& operator<<(std::ostream& out, const FibLFSR& object) {
+    for (int i = 0; i < 16; i++) {
+        out << object.data[i];
+    }
+
+    return out;
 }
